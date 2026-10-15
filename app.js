@@ -1,9 +1,9 @@
-// ==============================================================================
+// ============================================================================== 
 // NAVAL INTELLIGENCE SYSTEM — COMPLETE INTERACTIVE APPLICATION ENGINE
 // Handles: Vessel Mode Switching, Cutaway Zoom/Pan/Rotate, Interactive Pins,
 // 4-Step Fault Reporting, AI Diagnostics, Explainable Evidence, Officer Approval,
 // Work Orders, Spares, Telemetry Charts, and 2-Minute Evaluator Tour.
-// ==============================================================================
+// ============================================================================== 
 
 // Application State
 const state = {
@@ -27,9 +27,9 @@ let telemetryChartInstance = null;
 let categoryChartInstance = null;
 let departmentChartInstance = null;
 
-// ==============================================================================
+// ============================================================================== 
 // INITIALIZATION
-// ==============================================================================
+// ============================================================================== 
 document.addEventListener("DOMContentLoaded", () => {
   // Check stored theme
   const savedTheme = localStorage.getItem("naval_intel_theme");
@@ -37,13 +37,38 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(savedTheme);
   }
 
+  // Replace legacy ship-name text on load
+  replaceLegacyShipNames();
+
   // Pre-fill initial UI components
   initCharts();
 });
 
-// ==============================================================================
+function replaceLegacyShipNames() {
+  const textNodeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+
+  while (textNodeWalker.nextNode()) {
+    textNodes.push(textNodeWalker.currentNode);
+  }
+
+  textNodes.forEach(node => {
+    if (!node.textContent) return;
+
+    const original = node.textContent;
+    const updated = original
+      .replace(/INS\s+VISAKHAPATNAM\s*\(P15B\)/gi, "Combat Vessels")
+      .replace(/INS\s+VISAKHAPATNAM/gi, "Combat Vessels");
+
+    if (updated !== original) {
+      node.textContent = updated;
+    }
+  });
+}
+
+// ============================================================================== 
 // 1. VESSEL SELECTION & SWITCHING
-// ==============================================================================
+// ============================================================================== 
 function selectVesselMode(mode) {
   state.vesselMode = mode;
   state.activeCategory = "ALL";
@@ -75,7 +100,7 @@ function selectVesselMode(mode) {
   const cutawayImg = document.getElementById("ship-cutaway-image");
   if (mode === "NAVAL") {
     cutawayImg.src = "assets/ins_visakhapatnam_p15b_cutaway.png";
-    cutawayImg.alt = "INS VISAKHAPATNAM (P15B) Warship Cutaway";
+    cutawayImg.alt = "Combat Vessels Warship Cutaway";
   } else {
     cutawayImg.src = "assets/cargo_vessel_cutaway.png";
     cutawayImg.alt = "Commercial Cargo Vessel Cutaway";
@@ -106,20 +131,20 @@ function returnToVesselSelection() {
 function updateHeaderAndBranding() {
   const isNaval = state.vesselMode === "NAVAL";
   
-  document.getElementById("header-vessel-title").textContent = isNaval ? "INS VISAKHAPATNAM (P15B)" : "COMMERCIAL CARGO VESSEL";
-  document.getElementById("header-vessel-subtitle").textContent = isNaval ? "Naval Warship • 50 Machinery Systems Registered" : "Commercial Vessel • 65 Machinery Systems Registered";
+  document.getElementById("header-vessel-title").textContent = isNaval ? "Combat Vessels" : "COMMERCIAL CARGO VESSEL";
+  document.getElementById("header-vessel-subtitle").textContent = isNaval ? "Combat Vessel • 50 Machinery Systems Registered" : "Commercial Vessel • 65 Machinery Systems Registered";
   document.getElementById("header-role-tag").textContent = isNaval ? "WARSHIP" : "CARGO";
   document.getElementById("header-vessel-icon").className = isNaval ? "fa-solid fa-anchor" : "fa-solid fa-ship";
   document.getElementById("header-systems-count").textContent = isNaval ? "50 SYSTEMS REGISTERED" : "65 SYSTEMS REGISTERED";
 
   // Dashboard vessel header
-  document.getElementById("dash-vessel-name").textContent = isNaval ? "INS VISAKHAPATNAM (P15B)" : "COMMERCIAL CARGO VESSEL";
-  document.getElementById("hud-vessel-title").textContent = isNaval ? "INS VISAKHAPATNAM (P15B)" : "CARGO VESSEL";
+  document.getElementById("dash-vessel-name").textContent = isNaval ? "Combat Vessels" : "COMMERCIAL CARGO VESSEL";
+  document.getElementById("hud-vessel-title").textContent = isNaval ? "Combat Vessels" : "CARGO VESSEL";
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 2. THEME SWITCH (WHITE MODE / RED MODE)
-// ==============================================================================
+// ============================================================================== 
 function toggleTheme() {
   const nextTheme = state.theme === "white" ? "red" : "white";
   applyTheme(nextTheme);
@@ -148,9 +173,9 @@ function applyTheme(theme) {
   if (telemetryChartInstance) updateTelemetryChart();
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 3. NAVIGATION TABS
-// ==============================================================================
+// ============================================================================== 
 function switchTab(tabId) {
   state.activeTab = tabId;
 
@@ -175,9 +200,9 @@ function switchTab(tabId) {
   }
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 4. SHIP CUTAWAY VIEWPORT & MARKERS
-// ==============================================================================
+// ============================================================================== 
 function getCurrentSystems() {
   return state.vesselMode === "NAVAL" ? NAVAL_SYSTEMS : CARGO_SYSTEMS;
 }
@@ -274,8 +299,8 @@ function filterMachineryMarkers() {
 
 function setViewMode(mode) {
   state.viewMode = mode;
-  document.getElementById("view-mode-cutaway-btn").className = mode === "cutaway" ? "px-3 py-1.5 rounded bg-white text-slate-900 shadow-sm font-bold" : "px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 font-bold";
-  document.getElementById("view-mode-deck-btn").className = mode === "deck" ? "px-3 py-1.5 rounded bg-white text-slate-900 shadow-sm font-bold" : "px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 font-bold";
+  document.getElementById("view-mode-cutaway-btn").className = mode === "cutaway" ? "px-3 py-1.5 rounded bg-white text-slate-900 shadow-sm font-bold" : "px-3 py-1.5 rounded text-slate-600 hover:text-slate-900";
+  document.getElementById("view-mode-deck-btn").className = mode === "deck" ? "px-3 py-1.5 rounded bg-white text-slate-900 shadow-sm font-bold" : "px-3 py-1.5 rounded text-slate-600 hover:text-slate-900";
   renderMachineryMarkers();
 }
 
@@ -312,9 +337,9 @@ function applyCutawayTransform() {
   document.getElementById("zoom-level-text").textContent = `${Math.round(state.zoom * 100)}% ZOOM`;
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 5. MACHINERY SLIDEOVER & TELEMETRY PANEL
-// ==============================================================================
+// ============================================================================== 
 function openMachinerySlideover(machineryId) {
   state.selectedMachineryId = machineryId;
   const sys = getCurrentSystems().find(s => s.id === machineryId);
@@ -361,9 +386,9 @@ function triggerDrawerDiagnostic() {
   startSpecificDiagnostic(state.selectedMachineryId);
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 6. FAULT REPORTING & AI DIAGNOSTIC ENGINE
-// ==============================================================================
+// ============================================================================== 
 function populateFaultMachineryDropdown() {
   const select = document.getElementById("fault-machinery-select");
   if (!select) return;
@@ -460,9 +485,9 @@ function viewEvidenceModal(machineryId) {
   toggleEvidenceSection();
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 7. ENGINEER OFFICER REVIEW & WORK ORDER LIFECYCLE
-// ==============================================================================
+// ============================================================================== 
 function forwardToOfficerReview() {
   const sys = getCurrentSystems().find(s => s.id === state.selectedMachineryId);
   document.getElementById("officer-review-machinery").textContent = `${sys.name} (System ${sys.sysNo})`;
@@ -607,9 +632,9 @@ function markWorkComplete() {
   switchTab("tab-logbook");
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 8. DASHBOARD STATS & DEPARTMENT HEALTH
-// ==============================================================================
+// ============================================================================== 
 function updateDashboardStats() {
   const systems = getCurrentSystems();
   const normal = systems.filter(s => s.status === "NORMAL").length;
@@ -662,9 +687,9 @@ function renderDepartmentHealthBars() {
   });
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 9. INVENTORY & SPARES
-// ==============================================================================
+// ============================================================================== 
 function renderInventoryTable() {
   const tbody = document.getElementById("inventory-table-body");
   if (!tbody) return;
@@ -706,9 +731,9 @@ function reserveSelectedPart() {
   alert("Auto-Reservation executed for active critical maintenance orders.");
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 10. IETM VIEWER
-// ==============================================================================
+// ============================================================================== 
 function openIetmSnippet(docId) {
   const doc = IETM_MANUALS.find(d => d.id === docId);
   if (!doc) return;
@@ -719,9 +744,9 @@ function openIetmSnippet(docId) {
   switchTab("tab-ietm");
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 11. SENSOR TREND CHART.JS IMPLEMENTATION
-// ==============================================================================
+// ============================================================================== 
 function initCharts() {
   const ctx = document.getElementById("telemetryChartCanvas");
   if (!ctx) return;
@@ -826,9 +851,9 @@ function updateTelemetryChart() {
   telemetryChartInstance.update();
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 12. ANALYTICS CHARTS & TACTICAL ASSISTANT
-// ==============================================================================
+// ============================================================================== 
 function renderAnalyticsCharts() {
   const catCanvas = document.getElementById("analyticsCategoryChart");
   const deptCanvas = document.getElementById("analyticsDepartmentChart");
@@ -926,9 +951,9 @@ function askAssistantPrompt(promptText) {
   container.innerHTML = responseHtml;
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 13. AUDIT LOG & EXPORT
-// ==============================================================================
+// ============================================================================== 
 function renderAuditLogTable() {
   const tbody = document.getElementById("audit-log-table-body");
   if (!tbody) return;
@@ -965,9 +990,9 @@ function exportAuditLogCsv() {
   a.click();
 }
 
-// ==============================================================================
+// ============================================================================== 
 // 14. 2-MINUTE EVALUATOR TOUR AUTOMATION
-// ==============================================================================
+// ============================================================================== 
 function runTourStep(stepNum) {
   // Update Tour Pills styling
   for (let i = 1; i <= 8; i++) {
@@ -1024,9 +1049,9 @@ function runTourStep(stepNum) {
 }
 
 
-// ==============================================================================
+// ============================================================================== 
 // 15. SYSTEM CONFIGURATION & EVALUATOR TOOLS
-// ==============================================================================
+// ============================================================================== 
 function injectRandomAnomaly() {
   const systems = getCurrentSystems();
   const normalSystems = systems.filter(s => s.status === 'NORMAL');
